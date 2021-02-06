@@ -1,0 +1,27 @@
+language: generic
+
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t giga/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run giga/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t giga/multi-client ./client
+  - docker build -t giga/multi-nginx ./nginx
+  - docker build -t giga/multi-server ./server
+  - docker build -t giga/multi-worker ./worker
+
+## Log into the docker CLI
+## set DOCKER_ID  and DOCKER_PASSWORD on travis repo settings as env variables
+
+  #- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+##   take images and push them to docker hub
+  #- docker push giga/multi-clint
+  #- docker push giga/multi-ngingx
+  #- docker push giga/multi-server
+  #- docker push giga/multi-worker
